@@ -3,9 +3,1161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .admin-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dashboard Styles */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .metric-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .system-health {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .health-status {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .health-status.healthy {
+            background: #4caf50;
+            color: white;
+        }
+
+        .health-status.warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .health-status.critical {
+            background: #f44336;
+            color: white;
+        }
+
+        .health-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .health-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .health-item-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .health-item-value {
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Table Styles */
+        .section-title {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .user-type {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .user-type.farmer {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .user-type.buyer {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .user-type.keeper {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.active {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .status.suspended {
+            background: #ffe0b2;
+            color: #e65100;
+        }
+
+        .status.pending {
+            background: #bbdefb;
+            color: #1565c0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #45a049;
+        }
+
+        .btn-suspend {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-suspend:hover {
+            background: #e68900;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Dispute Section */
+        .dispute-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #ff9800;
+        }
+
+        .dispute-card.resolved {
+            border-left-color: #4caf50;
+        }
+
+        .dispute-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .dispute-id {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .dispute-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dispute-status.open {
+            background: #ff9800;
+            color: white;
+        }
+
+        .dispute-status.resolved {
+            background: #4caf50;
+            color: white;
+        }
+
+        .dispute-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .dispute-detail-item {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .dispute-detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .dispute-detail-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chat-logs {
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+
+        .chat-sender {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .chat-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .chat-text {
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .announcement-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .announcement-date {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .crop-price-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                justify-content: center;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>This is Admin</h1>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>🛡️ Admin Dashboard</h1>
+                <p style="color: #666; margin-top: 5px;">Complete System Management</p>
+            </div>
+            <div class="admin-badge">ADMIN PANEL</div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="showTab('users')">👥 User Management</button>
+            <button class="nav-btn" onclick="showTab('announcements')">📢 Announcements</button>
+            <button class="nav-btn" onclick="showTab('prices')">💰 Crop Prices</button>
+            <button class="nav-btn" onclick="showTab('disputes')">⚖️ Disputes</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">👨‍🌾</div>
+                    <div class="metric-label">Total Active Users</div>
+                    <div class="metric-value" id="totalUsers">1,247</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">💵</div>
+                    <div class="metric-label">Platform Revenue</div>
+                    <div class="metric-value" id="totalRevenue">$125,480</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">✅</div>
+                    <div class="metric-label">Completed Transactions</div>
+                    <div class="metric-value" id="transactions">8,934</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚠️</div>
+                    <div class="metric-label">Pending Issues</div>
+                    <div class="metric-value" id="pendingIssues">12</div>
+                </div>
+            </div>
+
+            <div class="system-health">
+                <h3 style="margin-bottom: 15px;">System Health Status</h3>
+                <div class="health-status healthy">✓ System Healthy</div>
+                <div class="health-details">
+                    <div class="health-item">
+                        <div class="health-item-label">Server Status</div>
+                        <div class="health-item-value">🟢 Online</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-item-label">Database</div>
+                        <div class="health-item-value">🟢 Connected</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-item-label">API Response</div>
+                        <div class="health-item-value">45ms</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-item-label">Last Backup</div>
+                        <div class="health-item-value">2 hours ago</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-item-label">Active Sessions</div>
+                        <div class="health-item-value">342</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-item-label">System Uptime</div>
+                        <div class="health-item-value">99.98%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Tab -->
+        <div id="users" class="tab-content">
+            <div class="section-title">User Management & Control</div>
+            
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="userSearch" placeholder="Search users by name, email, or ID..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>User Type</th>
+                            <th>Status</th>
+                            <th>Join Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Announcements Tab -->
+        <div id="announcements" class="tab-content">
+            <div class="section-title">Create & Manage Announcements</div>
+
+            <div class="form-section">
+                <h3 style="margin-bottom: 20px;">📝 Create New Announcement</h3>
+                <form onsubmit="addAnnouncement(event)">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="announcementTitle" placeholder="Enter announcement title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="announcementMessage" placeholder="Enter detailed message" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Audience</label>
+                        <select id="announcementAudience" required>
+                            <option value="">-- Select Audience --</option>
+                            <option value="all">All Users</option>
+                            <option value="farmers">Farmers Only</option>
+                            <option value="buyers">Buyers Only</option>
+                            <option value="keepers">Warehouse Keepers Only</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Publish Announcement</button>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-title" style="margin-top: 30px;">Recent Announcements</div>
+            <div id="announcementsList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Crop Prices Tab -->
+        <div id="prices" class="tab-content">
+            <div class="section-title">Manage Crop Prices</div>
+
+            <div class="form-section">
+                <h3 style="margin-bottom: 20px;">💰 Update Crop Prices</h3>
+                <form onsubmit="updateCropPrice(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Crop Name</label>
+                            <select id="cropName" required>
+                                <option value="">-- Select Crop --</option>
+                                <option value="wheat">Wheat</option>
+                                <option value="rice">Rice</option>
+                                <option value="corn">Corn</option>
+                                <option value="cotton">Cotton</option>
+                                <option value="tomato">Tomato</option>
+                                <option value="potato">Potato</option>
+                                <option value="onion">Onion</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Price per Unit (₹)</label>
+                            <input type="number" id="pricePerUnit" placeholder="Enter price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Unit (kg/quintal/ton)</label>
+                            <select id="cropUnit" required>
+                                <option value="kg">Kilogram</option>
+                                <option value="quintal">Quintal</option>
+                                <option value="ton">Metric Ton</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes/Description</label>
+                        <textarea id="priceNotes" placeholder="Add any notes about this price update" style="min-height: 60px;"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Update Price</button>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-title" style="margin-top: 30px;">Current Crop Prices</div>
+            <div id="pricesList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Disputes Tab -->
+        <div id="disputes" class="tab-content">
+            <div class="section-title">⚖️ Dispute Resolution Portal</div>
+
+            <div style="margin-bottom: 20px;">
+                <select id="disputeFilter" onchange="filterDisputes(this.value)" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                    <option value="all">All Disputes</option>
+                    <option value="open">Open Disputes</option>
+                    <option value="resolved">Resolved Disputes</option>
+                </select>
+            </div>
+
+            <div id="disputesList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        const users = [
+            { id: 'U001', name: 'Rajesh Kumar', email: 'rajesh@farm.com', type: 'farmer', status: 'active', joinDate: '2024-01-15' },
+            { id: 'U002', name: 'Priya Sharma', email: 'priya@buyer.com', type: 'buyer', status: 'active', joinDate: '2024-01-20' },
+            { id: 'U003', name: 'Anil Verma', email: 'anil@keeper.com', type: 'keeper', status: 'active', joinDate: '2024-02-01' },
+            { id: 'U004', name: 'Suresh Patel', email: 'suresh@farm.com', type: 'farmer', status: 'pending', joinDate: '2024-02-10' },
+            { id: 'U005', name: 'Neha Singh', email: 'neha@buyer.com', type: 'buyer', status: 'suspended', joinDate: '2024-01-25' },
+            { id: 'U006', name: 'Vikram Desai', email: 'vikram@farm.com', type: 'farmer', status: 'active', joinDate: '2024-02-05' },
+            { id: 'U007', name: 'Pooja Nair', email: 'pooja@keeper.com', type: 'keeper', status: 'active', joinDate: '2024-02-15' },
+        ];
+
+        let announcements = [
+            { id: 1, title: 'System Maintenance Notice', message: 'Platform maintenance scheduled for 2024-03-25 from 2 AM to 4 AM IST', audience: 'all', date: '2024-03-20' },
+            { id: 2, title: 'New Farmer Onboarding', message: 'Welcome new farmers! Check our tutorial section for getting started', audience: 'farmers', date: '2024-03-19' },
+        ];
+
+        let cropPrices = [
+            { id: 1, crop: 'Wheat', pricePerUnit: 2500, unit: 'quintal', date: '2024-03-20', notes: 'Market rate adjusted' },
+            { id: 2, crop: 'Rice', pricePerUnit: 3000, unit: 'quintal', date: '2024-03-19', notes: 'Seasonal rate' },
+            { id: 3, crop: 'Corn', pricePerUnit: 1800, unit: 'quintal', date: '2024-03-18', notes: 'Standard rate' },
+        ];
+
+        let disputes = [
+            {
+                id: 'D001',
+                transactionHash: '0x7a8f9b2c4d5e6f7a8b9c0d1e2f3a4b5c',
+                buyer: 'Priya Sharma',
+                seller: 'Rajesh Kumar',
+                crop: 'Wheat',
+                agreedPrice: 2500,
+                quantity: 10,
+                status: 'open',
+                date: '2024-03-18',
+                chatLogs: [
+                    { sender: 'Rajesh Kumar', time: '2024-03-18 10:30', message: 'Quality seems compromised' },
+                    { sender: 'Priya Sharma', time: '2024-03-18 11:00', message: 'I disagree, quality is as agreed' },
+                    { sender: 'Rajesh Kumar', time: '2024-03-18 11:30', message: 'Let me escalate this' },
+                ]
+            },
+            {
+                id: 'D002',
+                transactionHash: '0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f',
+                buyer: 'Neha Singh',
+                seller: 'Vikram Desai',
+                crop: 'Rice',
+                agreedPrice: 3000,
+                quantity: 15,
+                status: 'resolved',
+                date: '2024-03-15',
+                chatLogs: [
+                    { sender: 'Neha Singh', time: '2024-03-15 09:00', message: 'Delivery delayed?' },
+                    { sender: 'Vikram Desai', time: '2024-03-15 09:45', message: 'On the way, 2 hours ETA' },
+                    { sender: 'Neha Singh', time: '2024-03-15 12:00', message: 'Delivered, thank you' },
+                ]
+            },
+        ];
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Initialize content
+            if (tabName === 'users') {
+                renderUserTable();
+            } else if (tabName === 'announcements') {
+                renderAnnouncements();
+            } else if (tabName === 'prices') {
+                renderCropPrices();
+            } else if (tabName === 'disputes') {
+                renderDisputes();
+            }
+        }
+
+        // User Management Functions
+        function renderUserTable() {
+            const tableBody = document.getElementById('userTableBody');
+            tableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td><span class="user-type ${user.type}">${capitalizeFirst(user.type)}</span></td>
+                    <td><span class="status ${user.status}">${capitalizeFirst(user.status)}</span></td>
+                    <td>${user.joinDate}</td>
+                    <td>
+                        <div class="action-buttons">
+                            ${user.status !== 'active' ? `<button class="btn btn-approve" onclick="approveUser('${user.id}')">Approve</button>` : ''}
+                            ${user.status === 'active' ? `<button class="btn btn-suspend" onclick="suspendUser('${user.id}')">Suspend</button>` : ''}
+                            <button class="btn btn-delete" onclick="deleteUser('${user.id}')">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Search functionality
+            document.getElementById('userSearch').addEventListener('keyup', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('#userTableBody tr').forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+        function approveUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.status = 'active';
+                alert(`✓ User ${user.name} has been approved!`);
+                renderUserTable();
+            }
+        }
+
+        function suspendUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.status = 'suspended';
+                alert(`⚠️ User ${user.name} has been suspended!`);
+                renderUserTable();
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                const index = users.findIndex(u => u.id === userId);
+                if (index > -1) {
+                    users.splice(index, 1);
+                    alert('User deleted successfully!');
+                    renderUserTable();
+                }
+            }
+        }
+
+        // Announcements Functions
+        function addAnnouncement(event) {
+            event.preventDefault();
+            const title = document.getElementById('announcementTitle').value;
+            const message = document.getElementById('announcementMessage').value;
+            const audience = document.getElementById('announcementAudience').value;
+
+            const newAnnouncement = {
+                id: announcements.length + 1,
+                title,
+                message,
+                audience,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            announcements.unshift(newAnnouncement);
+            event.target.reset();
+            alert('✓ Announcement published successfully!');
+            renderAnnouncements();
+        }
+
+        function renderAnnouncements() {
+            const list = document.getElementById('announcementsList');
+            list.innerHTML = '';
+
+            announcements.forEach(ann => {
+                const div = document.createElement('div');
+                div.className = 'announcement-item';
+                div.innerHTML = `
+                    <h4>${ann.title}</h4>
+                    <p style="margin: 10px 0; color: #555;">${ann.message}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <div style="font-size: 12px; color: #999;">
+                            <strong>Audience:</strong> ${capitalizeFirst(ann.audience)} | 
+                            <strong>Published:</strong> ${ann.date}
+                        </div>
+                        <button class="btn btn-delete" onclick="deleteAnnouncement(${ann.id})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deleteAnnouncement(id) {
+            if (confirm('Delete this announcement?')) {
+                announcements = announcements.filter(a => a.id !== id);
+                renderAnnouncements();
+                alert('Announcement deleted!');
+            }
+        }
+
+        // Crop Prices Functions
+        function updateCropPrice(event) {
+            event.preventDefault();
+            const crop = document.getElementById('cropName').value;
+            const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+            const unit = document.getElementById('cropUnit').value;
+            const notes = document.getElementById('priceNotes').value;
+
+            // Update existing or add new
+            const existing = cropPrices.find(p => p.crop.toLowerCase() === crop.toLowerCase());
+            if (existing) {
+                existing.pricePerUnit = pricePerUnit;
+                existing.unit = unit;
+                existing.notes = notes;
+                existing.date = new Date().toISOString().split('T')[0];
+            } else {
+                cropPrices.unshift({
+                    id: cropPrices.length + 1,
+                    crop: capitalizeFirst(crop),
+                    pricePerUnit,
+                    unit,
+                    date: new Date().toISOString().split('T')[0],
+                    notes
+                });
+            }
+
+            event.target.reset();
+            alert('✓ Crop price updated successfully!');
+            renderCropPrices();
+        }
+
+        function renderCropPrices() {
+            const list = document.getElementById('pricesList');
+            list.innerHTML = '';
+
+            cropPrices.forEach(price => {
+                const div = document.createElement('div');
+                div.className = 'crop-price-row';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-size: 12px; color: #999; margin-bottom: 3px;">Crop</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #333;">${price.crop}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #999; margin-bottom: 3px;">Price</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #667eea;">₹${price.pricePerUnit.toFixed(2)}/${price.unit}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #999; margin-bottom: 3px;">Updated</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #333;">${price.date}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #999; margin-bottom: 3px;">Notes</div>
+                        <div style="font-size: 14px; color: #666;">${price.notes || 'No notes'}</div>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button class="btn btn-delete" onclick="deletePrice(${price.id})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deletePrice(id) {
+            if (confirm('Delete this price entry?')) {
+                cropPrices = cropPrices.filter(p => p.id !== id);
+                renderCropPrices();
+                alert('Price entry deleted!');
+            }
+        }
+
+        // Disputes Functions
+        function renderDisputes() {
+            renderDisputesList('all');
+        }
+
+        function filterDisputes(status) {
+            renderDisputesList(status);
+        }
+
+        function renderDisputesList(statusFilter) {
+            const list = document.getElementById('disputesList');
+            list.innerHTML = '';
+
+            const filtered = statusFilter === 'all' ? disputes : disputes.filter(d => d.status === statusFilter);
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="alert alert-info">No disputes found.</div>';
+                return;
+            }
+
+            filtered.forEach(dispute => {
+                const div = document.createElement('div');
+                div.className = `dispute-card ${dispute.status === 'resolved' ? 'resolved' : ''}`;
+                
+                let chatHtml = dispute.chatLogs.map(log => `
+                    <div class="chat-message">
+                        <div class="chat-sender">${log.sender}</div>
+                        <div class="chat-time">${log.time}</div>
+                        <div class="chat-text">${log.message}</div>
+                    </div>
+                `).join('');
+
+                div.innerHTML = `
+                    <div class="dispute-header">
+                        <span class="dispute-id">Dispute #${dispute.id}</span>
+                        <span class="dispute-status ${dispute.status}">${capitalizeFirst(dispute.status)}</span>
+                    </div>
+                    <div class="dispute-details">
+                        <div class="dispute-detail-item">
+                            <div class="dispute-detail-label">Transaction Hash</div>
+                            <div class="dispute-detail-value" style="word-break: break-all; font-size: 11px; font-family: monospace;">${dispute.transactionHash}</div>
+                        </div>
+                        <div class="dispute-detail-item">
+                            <div class="dispute-detail-label">Buyer</div>
+                            <div class="dispute-detail-value">${dispute.buyer}</div>
+                        </div>
+                        <div class="dispute-detail-item">
+                            <div class="dispute-detail-label">Seller</div>
+                            <div class="dispute-detail-value">${dispute.seller}</div>
+                        </div>
+                        <div class="dispute-detail-item">
+                            <div class="dispute-detail-label">Crop</div>
+                            <div class="dispute-detail-value">${dispute.crop}</div>
+                        </div>
+                        <div class="dispute-detail-item">
+                            <div class="dispute-detail-label">Quantity</div>
+                            <div class="dispute-detail-value">${dispute.quantity} quintal</div>
+                        </div>
+                        <div class="dispute-detail-item">
+                            <div class="dispute-detail-label">Agreed Price</div>
+                            <div class="dispute-detail-value">₹${dispute.agreedPrice}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin-bottom: 10px;">📋 Chat Logs (Read-Only)</h4>
+                        <div class="chat-logs">${chatHtml}</div>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        ${dispute.status === 'open' ? `
+                            <button class="btn btn-approve" onclick="resolveDispute('${dispute.id}')">Mark as Resolved</button>
+                            <button class="btn btn-primary" onclick="contactSupport('${dispute.id}')">Contact Support</button>
+                        ` : ''}
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function resolveDispute(disputeId) {
+            const dispute = disputes.find(d => d.id === disputeId);
+            if (dispute) {
+                dispute.status = 'resolved';
+                alert('✓ Dispute has been marked as resolved!');
+                renderDisputesList('all');
+            }
+        }
+
+        function contactSupport(disputeId) {
+            alert('Support team has been notified. A representative will reach out shortly.');
+        }
+
+        // Utility Function
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            renderUserTable();
+            renderAnnouncements();
+            renderCropPrices();
+            renderDisputes();
+        });
+    </script>
 </body>
 </html>

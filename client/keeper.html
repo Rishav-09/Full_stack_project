@@ -3,9 +3,1080 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keeper</title>
+    <title>Warehouse Keeper Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .keeper-badge {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: white;
+            border: 2px solid #1e3c72;
+            color: #1e3c72;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #1e3c72;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Title */
+        .section-title {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .status.received {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.verified {
+            background: #2196f3;
+            color: white;
+        }
+
+        .quality-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .quality-a {
+            background: #4caf50;
+            color: white;
+        }
+
+        .quality-b {
+            background: #ff9800;
+            color: white;
+        }
+
+        .quality-c {
+            background: #f44336;
+            color: white;
+        }
+
+        .storage-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .storage-cold {
+            background: #64b5f6;
+            color: white;
+        }
+
+        .storage-dry {
+            background: #fff9c4;
+            color: #333;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-critical {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 5px rgba(30, 60, 114, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #152d52;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e68900;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Inventory Card */
+        .inventory-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #1e3c72;
+        }
+
+        .inventory-card.alert-shelf {
+            border-left-color: #ff9800;
+            background: #fffbf0;
+        }
+
+        .inventory-card.critical-shelf {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+
+        .inventory-header {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .inventory-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inventory-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .inventory-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .shelf-life-indicator {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shelf-life-bar {
+            flex: 1;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .shelf-life-fill {
+            height: 100%;
+            background: #4caf50;
+            transition: background 0.3s ease;
+        }
+
+        .shelf-life-fill.warning {
+            background: #ff9800;
+        }
+
+        .shelf-life-fill.critical {
+            background: #f44336;
+        }
+
+        .shelf-life-days {
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .metric-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            color: #1e3c72;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* Search and Filter */
+        .search-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .search-bar select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                justify-content: center;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 10px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-bar input,
+            .search-bar select {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>This is Keeper</h1>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>🏭 Warehouse Keeper Dashboard</h1>
+                <p style="color: #666; margin-top: 5px;">Stock Management & Verification</p>
+            </div>
+            <div class="keeper-badge">WAREHOUSE KEEPER</div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-btn active" onclick="showTab('incoming')">📦 Incoming Shipments</button>
+            <button class="nav-btn" onclick="showTab('verification')">✅ Stock Verification</button>
+            <button class="nav-btn" onclick="showTab('inventory')">🏢 Active Inventory</button>
+        </div>
+
+        <!-- Incoming Shipments Tab -->
+        <div id="incoming" class="tab-content active">
+            <div class="section-title">📦 Incoming Shipments Awaiting Drop-Off</div>
+
+            <div class="search-bar">
+                <input type="text" id="shipmentSearch" placeholder="Search by seller name, crop, or shipment ID...">
+                <select id="shipmentFilter" onchange="filterShipments()">
+                    <option value="all">All Shipments</option>
+                    <option value="pending">Pending</option>
+                    <option value="received">Received</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shipment ID</th>
+                            <th>Seller Name</th>
+                            <th>Crop Type</th>
+                            <th>Expected Quantity</th>
+                            <th>Expected Weight (kg)</th>
+                            <th>Sale Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shipmentTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Stock Verification Tab -->
+        <div id="verification" class="tab-content">
+            <div class="section-title">✅ Stock Verification Form</div>
+
+            <div class="alert alert-info">
+                <strong>📌 Instructions:</strong> Complete this form when a farmer drops off goods at the warehouse. Verify actual weight, assign quality grade, and select appropriate storage.
+            </div>
+
+            <div class="form-section">
+                <h3 style="margin-bottom: 20px;">Farmer Drop-Off Registration</h3>
+                <form onsubmit="submitVerification(event)">
+                    <!-- Shipment Selection -->
+                    <div class="form-group">
+                        <label>Select Shipment*</label>
+                        <select id="verificationShipment" required onchange="populateShipmentDetails()">
+                            <option value="">-- Choose Shipment --</option>
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+
+                    <!-- Shipment Details (Read-only) -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Crop Type</label>
+                            <input type="text" id="verificationCrop" readonly style="background: #f5f5f5;">
+                        </div>
+                        <div class="form-group">
+                            <label>Seller Name</label>
+                            <input type="text" id="verificationSeller" readonly style="background: #f5f5f5;">
+                        </div>
+                        <div class="form-group">
+                            <label>Expected Quantity</label>
+                            <input type="text" id="verificationExpectedQty" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+
+                    <!-- Verification Details -->
+                    <div style="border-top: 2px solid #eee; padding-top: 20px; margin-top: 20px;">
+                        <h4 style="margin-bottom: 20px;">🔍 Verification Data</h4>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Actual Weight Received (kg)*</label>
+                                <input type="number" id="actualWeight" placeholder="Enter actual weight in kg" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Quality Grade*</label>
+                                <select id="qualityGrade" required>
+                                    <option value="">-- Select Grade --</option>
+                                    <option value="A">Grade A (Excellent)</option>
+                                    <option value="B">Grade B (Good)</option>
+                                    <option value="C">Grade C (Acceptable)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Storage Type*</label>
+                                <select id="storageType" required>
+                                    <option value="">-- Select Storage --</option>
+                                    <option value="cold">Cold Storage (0-5°C)</option>
+                                    <option value="dry">Dry Storage (15-25°C)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Storage Slot/Location*</label>
+                            <input type="text" id="storageSlot" placeholder="e.g., CS-A12, DS-B05" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Inspection Notes</label>
+                            <textarea id="inspectionNotes" placeholder="Any observations, damage, or remarks..." style="min-height: 100px;"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Shelf Life (Days)*</label>
+                            <input type="number" id="shelfLife" placeholder="Enter shelf life in days" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="btn-group" style="margin-top: 20px;">
+                        <button type="submit" class="btn btn-success">✓ Verify & Register Stock</button>
+                        <button type="reset" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Verification Success Messages -->
+            <div id="verificationMessages">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Active Inventory Tab -->
+        <div id="inventory" class="tab-content">
+            <div class="section-title">🏢 Real-Time Active Inventory Dashboard</div>
+
+            <!-- Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">📦</div>
+                    <div class="metric-label">Total Items in Storage</div>
+                    <div class="metric-value" id="totalItems">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">❄️</div>
+                    <div class="metric-label">Cold Storage Units</div>
+                    <div class="metric-value" id="coldUnits">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🌾</div>
+                    <div class="metric-label">Dry Storage Units</div>
+                    <div class="metric-value" id="dryUnits">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚠️</div>
+                    <div class="metric-label">Expiring Soon</div>
+                    <div class="metric-value" id="expiringItems">0</div>
+                </div>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="search-bar">
+                <input type="text" id="inventorySearch" placeholder="Search by crop, slot, or seller...">
+                <select id="inventoryQualityFilter" onchange="filterInventory()">
+                    <option value="all">All Qualities</option>
+                    <option value="A">Grade A</option>
+                    <option value="B">Grade B</option>
+                    <option value="C">Grade C</option>
+                </select>
+                <select id="inventoryStorageFilter" onchange="filterInventory()">
+                    <option value="all">All Storage Types</option>
+                    <option value="cold">Cold Storage</option>
+                    <option value="dry">Dry Storage</option>
+                </select>
+            </div>
+
+            <!-- Alerts Section -->
+            <div id="alertsSection">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Inventory List -->
+            <div id="inventoryList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        let incomingShipments = [
+            { id: 'SHP001', seller: 'Rajesh Kumar', crop: 'Wheat', quantity: 50, weight: 5000, saleDate: '2024-03-20', status: 'pending' },
+            { id: 'SHP002', seller: 'Suresh Patel', crop: 'Rice', quantity: 40, weight: 4000, saleDate: '2024-03-21', status: 'pending' },
+            { id: 'SHP003', seller: 'Vikram Desai', crop: 'Corn', quantity: 30, weight: 3000, saleDate: '2024-03-19', status: 'received' },
+            { id: 'SHP004', seller: 'Mohan Singh', crop: 'Cotton', quantity: 25, weight: 2500, saleDate: '2024-03-22', status: 'pending' },
+        ];
+
+        let verifiedStock = [
+            { id: 'INV001', crop: 'Wheat', seller: 'Rajesh Kumar', actualWeight: 4950, quality: 'A', storage: 'cold', slot: 'CS-A01', shelfLife: 180, daysRemaining: 150, verificationDate: '2024-03-20', notes: 'Good condition' },
+            { id: 'INV002', crop: 'Rice', seller: 'Priya Sharma', actualWeight: 3980, quality: 'B', storage: 'dry', slot: 'DS-B05', shelfLife: 90, daysRemaining: 20, verificationDate: '2024-03-18', notes: 'Minor moisture detected' },
+            { id: 'INV003', crop: 'Corn', seller: 'Anil Verma', actualWeight: 2990, quality: 'A', storage: 'dry', slot: 'DS-C12', shelfLife: 120, daysRemaining: 85, verificationDate: '2024-03-19', notes: 'Excellent quality' },
+            { id: 'INV004', crop: 'Tomato', seller: 'Neha Singh', actualWeight: 1950, quality: 'B', storage: 'cold', slot: 'CS-A15', shelfLife: 30, daysRemaining: 5, verificationDate: '2024-03-17', notes: 'Highly perishable' },
+            { id: 'INV005', crop: 'Potato', seller: 'Vikram Desai', actualWeight: 2480, quality: 'A', storage: 'dry', slot: 'DS-D08', shelfLife: 90, daysRemaining: 72, verificationDate: '2024-03-20', notes: 'Perfect condition' },
+        ];
+
+        // Tab Switching
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'incoming') {
+                renderIncomingShipments();
+            } else if (tabName === 'verification') {
+                populateShipmentDropdown();
+            } else if (tabName === 'inventory') {
+                renderInventory();
+            }
+        }
+
+        // === INCOMING SHIPMENTS FUNCTIONS ===
+        function renderIncomingShipments() {
+            const tableBody = document.getElementById('shipmentTableBody');
+            tableBody.innerHTML = '';
+
+            incomingShipments.forEach(shipment => {
+                const row = document.createElement('tr');
+                const statusClass = shipment.status === 'pending' ? 'pending' : 'received';
+                const statusText = shipment.status === 'pending' ? 'Pending Drop-Off' : 'Received';
+
+                row.innerHTML = `
+                    <td>${shipment.id}</td>
+                    <td>${shipment.seller}</td>
+                    <td>${shipment.crop}</td>
+                    <td>${shipment.quantity} units</td>
+                    <td>${shipment.weight.toLocaleString()} kg</td>
+                    <td>${shipment.saleDate}</td>
+                    <td><span class="status-badge status ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            ${shipment.status === 'pending' ? `<button class="btn btn-primary" onclick="confirmReceipt('${shipment.id}')">Confirm Receipt</button>` : ''}
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterShipments() {
+            const filterValue = document.getElementById('shipmentFilter').value;
+            const searchValue = document.getElementById('shipmentSearch').value.toLowerCase();
+
+            document.querySelectorAll('#shipmentTableBody tr').forEach(row => {
+                const status = row.cells[6].textContent.toLowerCase();
+                const text = row.textContent.toLowerCase();
+
+                const statusMatch = filterValue === 'all' || (filterValue === 'pending' && text.includes('pending')) || (filterValue === 'received' && text.includes('received'));
+                const searchMatch = text.includes(searchValue);
+
+                row.style.display = statusMatch && searchMatch ? '' : 'none';
+            });
+        }
+
+        function confirmReceipt(shipmentId) {
+            const shipment = incomingShipments.find(s => s.id === shipmentId);
+            if (shipment) {
+                shipment.status = 'received';
+                alert(`✓ Receipt confirmed for ${shipment.id} (${shipment.crop})`);
+                renderIncomingShipments();
+            }
+        }
+
+        // === VERIFICATION FUNCTIONS ===
+        function populateShipmentDropdown() {
+            const dropdown = document.getElementById('verificationShipment');
+            dropdown.innerHTML = '<option value="">-- Choose Shipment --</option>';
+
+            incomingShipments.filter(s => s.status === 'received').forEach(shipment => {
+                const option = document.createElement('option');
+                option.value = shipment.id;
+                option.text = `${shipment.id} - ${shipment.crop} from ${shipment.seller}`;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function populateShipmentDetails() {
+            const shipmentId = document.getElementById('verificationShipment').value;
+            const shipment = incomingShipments.find(s => s.id === shipmentId);
+
+            if (shipment) {
+                document.getElementById('verificationCrop').value = shipment.crop;
+                document.getElementById('verificationSeller').value = shipment.seller;
+                document.getElementById('verificationExpectedQty').value = `${shipment.quantity} units (${shipment.weight} kg)`;
+            } else {
+                document.getElementById('verificationCrop').value = '';
+                document.getElementById('verificationSeller').value = '';
+                document.getElementById('verificationExpectedQty').value = '';
+            }
+        }
+
+        function submitVerification(event) {
+            event.preventDefault();
+            
+            const shipmentId = document.getElementById('verificationShipment').value;
+            const shipment = incomingShipments.find(s => s.id === shipmentId);
+
+            if (!shipment) {
+                alert('Please select a valid shipment');
+                return;
+            }
+
+            const newInventory = {
+                id: 'INV' + String(verifiedStock.length + 1).padStart(3, '0'),
+                crop: shipment.crop,
+                seller: shipment.seller,
+                actualWeight: parseFloat(document.getElementById('actualWeight').value),
+                quality: document.getElementById('qualityGrade').value,
+                storage: document.getElementById('storageType').value,
+                slot: document.getElementById('storageSlot').value,
+                shelfLife: parseInt(document.getElementById('shelfLife').value),
+                daysRemaining: parseInt(document.getElementById('shelfLife').value),
+                verificationDate: new Date().toISOString().split('T')[0],
+                notes: document.getElementById('inspectionNotes').value || 'No notes'
+            };
+
+            verifiedStock.unshift(newInventory);
+            alert(`✓ Stock verified and registered!\nInventory ID: ${newInventory.id}\nStorage Slot: ${newInventory.slot}`);
+
+            // Show success message
+            const messagesDiv = document.getElementById('verificationMessages');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'alert alert-info';
+            successDiv.style.marginTop = '20px';
+            successDiv.innerHTML = `
+                <strong>✓ Success!</strong> Stock verified and added to inventory.<br>
+                Inventory ID: <strong>${newInventory.id}</strong><br>
+                Storage Slot: <strong>${newInventory.slot}</strong><br>
+                Quality: <strong>Grade ${newInventory.quality}</strong>
+            `;
+            messagesDiv.appendChild(successDiv);
+
+            event.target.reset();
+            document.getElementById('verificationCrop').value = '';
+            document.getElementById('verificationSeller').value = '';
+            document.getElementById('verificationExpectedQty').value = '';
+
+            setTimeout(() => successDiv.remove(), 5000);
+        }
+
+        // === INVENTORY FUNCTIONS ===
+        function renderInventory() {
+            updateMetrics();
+            renderInventoryCards();
+            renderAlerts();
+        }
+
+        function updateMetrics() {
+            document.getElementById('totalItems').innerText = verifiedStock.length;
+            document.getElementById('coldUnits').innerText = verifiedStock.filter(item => item.storage === 'cold').length;
+            document.getElementById('dryUnits').innerText = verifiedStock.filter(item => item.storage === 'dry').length;
+            document.getElementById('expiringItems').innerText = verifiedStock.filter(item => item.daysRemaining <= 7).length;
+        }
+
+        function renderAlerts() {
+            const alertsSection = document.getElementById('alertsSection');
+            alertsSection.innerHTML = '';
+
+            const criticalItems = verifiedStock.filter(item => item.daysRemaining <= 3);
+            const warningItems = verifiedStock.filter(item => item.daysRemaining > 3 && item.daysRemaining <= 7);
+
+            if (criticalItems.length > 0) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-critical';
+                alert.innerHTML = `
+                    <strong>🔴 CRITICAL - IMMEDIATE ACTION NEEDED!</strong><br>
+                    ${criticalItems.length} item(s) expiring within 3 days:<br>
+                    ${criticalItems.map(item => `• ${item.crop} (${item.slot}) - ${item.daysRemaining} days remaining`).join('<br>')}
+                `;
+                alertsSection.appendChild(alert);
+            }
+
+            if (warningItems.length > 0) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning';
+                alert.innerHTML = `
+                    <strong>⚠️ WARNING - Check Shelf Life</strong><br>
+                    ${warningItems.length} item(s) expiring within 7 days:<br>
+                    ${warningItems.map(item => `• ${item.crop} (${item.slot}) - ${item.daysRemaining} days remaining`).join('<br>')}
+                `;
+                alertsSection.appendChild(alert);
+            }
+
+            if (criticalItems.length === 0 && warningItems.length === 0) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-info';
+                alert.innerHTML = '✓ All items have adequate shelf life remaining.';
+                alertsSection.appendChild(alert);
+            }
+        }
+
+        function renderInventoryCards() {
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+
+            const searchValue = document.getElementById('inventorySearch').value.toLowerCase();
+            const qualityFilter = document.getElementById('inventoryQualityFilter').value;
+            const storageFilter = document.getElementById('inventoryStorageFilter').value;
+
+            verifiedStock.forEach(item => {
+                const searchMatch = item.crop.toLowerCase().includes(searchValue) || 
+                                   item.slot.toLowerCase().includes(searchValue) ||
+                                   item.seller.toLowerCase().includes(searchValue);
+                const qualityMatch = qualityFilter === 'all' || item.quality === qualityFilter;
+                const storageMatch = storageFilter === 'all' || item.storage === storageFilter;
+
+                if (!searchMatch || !qualityMatch || !storageMatch) return;
+
+                const card = document.createElement('div');
+
+                let cardClass = 'inventory-card';
+                if (item.daysRemaining <= 3) {
+                    cardClass += ' critical-shelf';
+                } else if (item.daysRemaining <= 7) {
+                    cardClass += ' alert-shelf';
+                }
+
+                const shelfLifePercentage = (item.daysRemaining / item.shelfLife) * 100;
+                let shelfLifeClass = '';
+                if (shelfLifePercentage <= 20) {
+                    shelfLifeClass = 'critical';
+                } else if (shelfLifePercentage <= 40) {
+                    shelfLifeClass = 'warning';
+                }
+
+                const storageType = item.storage === 'cold' ? '❄️ Cold Storage (0-5°C)' : '🌾 Dry Storage (15-25°C)';
+                const storageClass = item.storage === 'cold' ? 'storage-cold' : 'storage-dry';
+
+                card.className = cardClass;
+                card.innerHTML = `
+                    <div class="inventory-header">
+                        <div class="inventory-item">
+                            <div class="inventory-label">Crop</div>
+                            <div class="inventory-value">${item.crop}</div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-label">Inventory ID</div>
+                            <div class="inventory-value">${item.id}</div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-label">Quality Grade</div>
+                            <div><span class="quality-badge quality-${item.quality.toLowerCase()}">Grade ${item.quality}</span></div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-label">Storage Slot</div>
+                            <div class="inventory-value">${item.slot}</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                        <div class="inventory-item">
+                            <div class="inventory-label">Weight</div>
+                            <div class="inventory-value">${item.actualWeight.toLocaleString()} kg</div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-label">Storage Type</div>
+                            <div><span class="storage-badge ${storageClass}">${storageType}</span></div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-label">Verified By</div>
+                            <div class="inventory-value">${item.seller}</div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-label">Entry Date</div>
+                            <div class="inventory-value">${item.verificationDate}</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <div class="inventory-label">Notes</div>
+                        <div style="color: #555; padding: 8px; background: #f9f9f9; border-radius: 5px; font-size: 13px;">${item.notes}</div>
+                    </div>
+
+                    <div class="shelf-life-indicator">
+                        <div style="min-width: 80px;">
+                            <div class="inventory-label">Shelf Life</div>
+                            <div class="inventory-value">${item.daysRemaining} / ${item.shelfLife}</div>
+                        </div>
+                        <div class="shelf-life-bar">
+                            <div class="shelf-life-fill ${shelfLifeClass}" style="width: ${shelfLifePercentage}%"></div>
+                        </div>
+                        <div class="shelf-life-days">${item.daysRemaining} days</div>
+                    </div>
+                `;
+
+                inventoryList.appendChild(card);
+            });
+
+            if (verifiedStock.length === 0 || inventoryList.children.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'alert alert-info';
+                emptyMsg.innerHTML = '📭 No inventory items found.';
+                inventoryList.appendChild(emptyMsg);
+            }
+        }
+
+        function filterInventory() {
+            renderInventoryCards();
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            renderIncomingShipments();
+            renderInventory();
+        });
+    </script>
 </body>
 </html>
