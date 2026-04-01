@@ -1,11 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buyer</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="./src/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buyer Dashboard | AgriStack</title>
 </head>
 <body>
-    <h1>This is Buyer</h1>
+  
+  <nav class="navbar">
+    <div class="logo">AgriStack - Buyer</div>
+    <a class="navbar-link" id="logout-btn" href="#">Logout</a>
+  </nav>
+
+  <main style="padding: 4rem 2rem; text-align: center;">
+    <h1>Welcome to your Dashboard</h1>
+    <p>Loading your Buy data...</p>
+  </main>
+
+  <script type="module" src="./src/authGuard.js"></script>
 </body>
 </html>
